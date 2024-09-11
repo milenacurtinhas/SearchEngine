@@ -6,8 +6,10 @@
 #include <string.h>
 #include "tst.h"
 
-TST* create_stopwords_tst(FILE *stopwords);
-TST *create_twords_tst(char *pagesStr, FILE *index, TST *stopwordsTST);
+TST* create_stopwords_tst(FILE *file);
+TST *create_twords_tst(FILE *file, TST *stopwordsTST, char *pagesStr);
 TST * read_pages(FILE *file, TST *twordsTST, TST *stopwordsTST, char *path);
+TST *create_graph_tst(FILE *file);
+Value *add_new_value(Value *head, char *word);
 
 #endif

@@ -91,7 +91,6 @@ void free_tst(TST *t) {
     if (t == NULL) {
         return;
     }
-    
 
     // Libera a subárvore esquerda, do meio e direita recursivamente
     free_tst(t->l);
