@@ -7,9 +7,9 @@
 int main(int argc, char *argv[]) {
     char *diretorio = argv[1];
 
-    // char *indexStr = malloc(strlen(diretorio) + strlen("/index.txt") + 1);
-    // strcpy(indexStr, diretorio);
-    // strcat(indexStr, "/index.txt");
+    char *indexStr = malloc(strlen(diretorio) + strlen("/index.txt") + 1);
+    strcpy(indexStr, diretorio);
+    strcat(indexStr, "/index.txt");
 
     // char *graphStr = malloc(strlen(diretorio) + strlen("/graph.txt") + 1);
     // strcpy(graphStr, diretorio);
@@ -19,23 +19,26 @@ int main(int argc, char *argv[]) {
     strcpy(stopwordsStr, diretorio);
     strcat(stopwordsStr, "/stopwords.txt");
 
-    // char *pagesStr = malloc(strlen(diretorio) + strlen("/pages") + 1);
-    // strcpy(pagesStr, diretorio);
-    // strcat(pagesStr, "/pages");
+    char *pagesStr = malloc(strlen(diretorio) + strlen("/pages/") + 1);
+    strcpy(pagesStr, diretorio);
+    strcat(pagesStr, "/pages/");
     
-    // FILE *index = fopen(indexStr, "r");
+    FILE *index = fopen(indexStr, "r");
     // FILE *graph = fopen(graphStr, "r");
     FILE *stopwords = fopen(stopwordsStr, "r");
 
     TST *stopwordsTST = create_stopwords_tst(stopwords);
-
+    TST *twordsTST = create_twords_tst(pagesStr, index, stopwordsTST);
+    
     free_tst(stopwordsTST);
-    // free(indexStr);
+    free_tst(twordsTST);
+
+    free(indexStr);
     // free(graphStr);
     free(stopwordsStr);
-    // free(pagesStr);
-    // fclose(index);
-    // fclose(graph);
+    free(pagesStr);
+    fclose(index);
+    //fclose(graph);
     fclose(stopwords);
 
     return 0;

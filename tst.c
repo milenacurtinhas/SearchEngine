@@ -4,16 +4,12 @@
 
 TST* create_node(){
     TST* node = calloc(1, sizeof(TST));
-    node->l = NULL;
-    node->m= NULL;
-    node->r = NULL;
     node->val = NULL_Value;
     return node;
 }
 
 TST* rec_insert(TST* t, String* key, Value *val, int d) {
     unsigned char c = key->c[d];
-    printf("%c %d %d\n", c, key->len, d);
     if (t == NULL){ 
         t = create_node(); 
         t->c = c;
@@ -28,15 +24,16 @@ TST* rec_insert(TST* t, String* key, Value *val, int d) {
         t->m = rec_insert(t->m, key, val, d+1);
     } 
     else{
-        Value* value = t->val;
-        while(value != NULL){
-            value = value->next;
+        if(t->val == NULL){
+            t->val = val;
         }
-        value = val;
-        printf("\n%s", value->str.c);
-        printf("aaaaa\n");
-        // free(val->str.c);
-        // free(val);
+        else{
+            Value* value = t->val;
+            while(value->next != NULL){
+                value = value->next;
+            }
+            value->next = val;
+        }
     }
     
     return t;
@@ -64,15 +61,17 @@ TST* rec_search(TST* t, String* key, int d) {
         return t; 
     }
 }
+
 Value* TST_search(TST* t, String* key) {
     t = rec_search(t, key, 0);
     if (t == NULL) { 
-        return NULL_Value; 
+        return NULL; 
     }
     else {
         return t->val; 
     }
 }
+
 void free_value(Value *val) {
     while (val != NULL) {
         Value *next = val->next;

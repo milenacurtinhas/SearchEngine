@@ -7,5 +7,7 @@
 #include "tst.h"
 
 TST* create_stopwords_tst(FILE *stopwords);
+TST *create_twords_tst(char *pagesStr, FILE *index, TST *stopwordsTST);
+TST * read_pages(FILE *file, TST *twordsTST, TST *stopwordsTST, char *path);
 
 #endif

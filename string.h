@@ -7,5 +7,4 @@ typedef struct {
     int len;
 } String;
 
-
 #endif
