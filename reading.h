@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "tst.h"
+#include "TST.h"
 
 TST* create_stopwords_tst(FILE *file);
 TST *create_twords_tst(FILE *file, TST *stopwordsTST, char *pagesStr);

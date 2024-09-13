@@ -1,5 +1,5 @@
 #include "reading.h"
-
+#include "TST.h"
 TST* create_stopwords_tst(FILE *file){
     TST *stopwordsTST = NULL;
     char *line = NULL;
@@ -68,13 +68,11 @@ TST *read_pages(FILE *file, TST *twordsTST, TST *stopwordsTST, char *path){
             wordStr->c = strdup(word);
             wordStr->len = (int)strlen(word);
 
-            Value *val = TST_search(stopwordsTST, wordStr);
-            if(val == NULL){
-                val = calloc(1, sizeof(Value));
-                val->str.c = strdup(path);
-                val->str.len = (int)strlen(path);
-                twordsTST = TST_insert(twordsTST, wordStr, val);
-            }
+            Value *val = calloc(1, sizeof(Value));
+            val->str.c = strdup(path);
+            val->str.len = (int)strlen(path);
+            twordsTST = TST_insert(twordsTST, wordStr, val);
+            
 
             free(wordStr->c);
             free(wordStr);
