@@ -105,3 +105,24 @@ void free_tst(TST *t) {
     // Finalmente, libera o nó atual
     free(t);
 }
+
+Value *create_value(char *string){
+    Value *val = calloc(1, sizeof(Value));
+    val->str.c = strdup(string);
+    val->str.len = strlen(string);
+
+    return val;
+}
+
+String *create_string(char *string){
+    String *str = malloc(sizeof(String));
+    str->c = strdup(string);
+    str->len = strlen(str->c);
+
+    return str;
+}
+
+void *free_string(String *string){
+    free(string->c);
+    free(string);
+}

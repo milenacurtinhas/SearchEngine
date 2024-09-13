@@ -1,5 +1,6 @@
 #include "reading.h"
-#include "TST.h"
+
+
 TST* create_stopwords_tst(FILE *file){
     TST *stopwordsTST = NULL;
     char *line = NULL;
@@ -7,9 +8,7 @@ TST* create_stopwords_tst(FILE *file){
     int i = 0;
 
     while(getline(&line, &len, file) != -1){
-        String *word = malloc(sizeof(String));
-        word->c = strdup(line);      
-        word->len = (int)strlen(word->c);
+        String *word = create_string(line);
 
         Value* val = calloc(1, sizeof(Value));
         char str[12]; // Tamanho suficiente para armazenar o inteiro e o terminador nulo
@@ -21,8 +20,7 @@ TST* create_stopwords_tst(FILE *file){
         
         stopwordsTST = TST_insert(stopwordsTST, word, val);
         
-        free(word->c);
-        free(word);
+        free_string(word);
         i++;
     }
 
@@ -64,19 +62,12 @@ TST *read_pages(FILE *file, TST *twordsTST, TST *stopwordsTST, char *path){
         char *word = strtok(line, " ");
 
         while(word != NULL){
-            String *wordStr = calloc(1, sizeof(String));
-            wordStr->c = strdup(word);
-            wordStr->len = (int)strlen(word);
+            String *wordStr = create_string(word);
+            Value *val = create_value(path);
 
-            Value *val = calloc(1, sizeof(Value));
-            val->str.c = strdup(path);
-            val->str.len = (int)strlen(path);
             twordsTST = TST_insert(twordsTST, wordStr, val);
             
-
-            free(wordStr->c);
-            free(wordStr);
-
+            free_string(wordStr);
             word = strtok(NULL, " ");
         }    
     }
@@ -85,8 +76,8 @@ TST *read_pages(FILE *file, TST *twordsTST, TST *stopwordsTST, char *path){
     return twordsTST;
 }
 
-TST *create_graph_tst(FILE *file){
-    TST *graphTST = NULL;
+graphTST* create_graph_tst(FILE *file){
+    graphTST *tst = NULL;
     char *line = NULL;
     size_t len = 0;
 
@@ -94,40 +85,58 @@ TST *create_graph_tst(FILE *file){
         line[strcspn(line, "\n")] = '\0';
         char *word = strtok(line, " ");
        
-        String *wordStr = calloc(1, sizeof(String));
-        wordStr->c = strdup(word);
-        wordStr->len = (int)strlen(word);
+        String *wordStr = create_string(word);
 
-        Value *val = NULL;
-                
+        printf("%s\n", wordStr->c);
+
+        Value *outVal = NULL;
+        
+        char *n = strtok(NULL, " ");
+        int count = atoi(n);
+        printf("%d\n", count);
+
         while ((word = strtok(NULL, " ")) != NULL) {
-            val = add_new_value(val, word);
+            outVal = add_new_value(outVal, word);
+
+            String *outWord = create_string(word);
+
+            Value *inVal = create_value(wordStr->c);
+
+            printf("word: %s, in word: %s\n\n", outWord->c, inVal->str.c);
+
+            tst = TST_insert_graph(tst, outWord, inVal, NULL, 1);
+
+            free_string(outWord);
         }
-
-        graphTST = TST_insert(graphTST, wordStr, val);
-        free(wordStr->c);
-        free(wordStr);
+        tst = TST_insert_graph(tst, wordStr, NULL, outVal, count);
+        
+        free_string(wordStr);
     }
-
     free(line);
-    return graphTST;
+    return tst;
 }
 
 Value *add_new_value(Value *head, char *word) {
-    Value *new_val = malloc(sizeof(Value));
-    new_val->str.c = strdup(word);
-    new_val->str.len = (int)strlen(word);
-    new_val->next = NULL;
+    Value *new_val = create_value(word);
 
+    printf("linked list de a: ");
     if (head == NULL) {
+        printf("%s\n",new_val->str.c);
         return new_val; 
     }
     
     Value *current = head;
+    
     while (current->next != NULL) {
         current = current->next;
     }
+    
     current->next = new_val;
-
+    Value *aux = head;
+    while(aux){
+        printf("%s ", aux->str.c);
+        aux = aux->next;
+    }
+    printf("\n");
     return head;
 }

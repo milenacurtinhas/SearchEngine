@@ -22,24 +22,24 @@ int main(int argc, char *argv[]) {
     strcpy(pagesStr, diretorio);
     strcat(pagesStr, "/pages/");
     
-    FILE *index = fopen(indexStr, "r");
-    FILE *graph = fopen(graphStr, "r");
-    FILE *stopwords = fopen(stopwordsStr, "r");
+    FILE *indexFile  = fopen(indexStr, "r");
+    FILE *graphFile = fopen(graphStr, "r");
+    FILE *stopwordsFile  = fopen(stopwordsStr, "r");
 
-    TST *stopwordsTST = create_stopwords_tst(stopwords);
-    TST *twordsTST = create_twords_tst(index, stopwordsTST, pagesStr);
-    TST *graphTST = create_graph_tst(graph);
+    TST *stopwordsTST = create_stopwords_tst(stopwordsFile);
+    TST *twordsTST = create_twords_tst(indexFile , stopwordsTST, pagesStr);
+    graphTST *graph = create_graph_tst(graphFile);
     
     free_tst(stopwordsTST);
     free_tst(twordsTST);
-    free_tst(graphTST);
+    free_tst_graph(graph);
     free(indexStr);
     free(graphStr);
     free(stopwordsStr);
     free(pagesStr);
-    fclose(index);
-    fclose(graph);
-    fclose(stopwords);
+    fclose(indexFile);
+    fclose(graphFile);
+    fclose(stopwordsFile);
 
     return 0;
 }
