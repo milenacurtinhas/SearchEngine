@@ -76,24 +76,22 @@ TST *read_pages(FILE *file, TST *twordsTST, TST *stopwordsTST, char *path){
     return twordsTST;
 }
 
-graphTST* create_graph_tst(FILE *file){
+graphTST* create_graph_tst(FILE *file, int *count){
     graphTST *tst = NULL;
     char *line = NULL;
     size_t len = 0;
 
     while(getline(&line, &len, file) != -1){
+        (*count)++;
         line[strcspn(line, "\n")] = '\0';
         char *word = strtok(line, " ");
        
         String *wordStr = create_string(word);
 
-        printf("%s\n", wordStr->c);
-
         Value *outVal = NULL;
         
         char *n = strtok(NULL, " ");
         int count = atoi(n);
-        printf("%d\n", count);
 
         while ((word = strtok(NULL, " ")) != NULL) {
             outVal = add_new_value(outVal, word);
@@ -101,8 +99,6 @@ graphTST* create_graph_tst(FILE *file){
             String *outWord = create_string(word);
 
             Value *inVal = create_value(wordStr->c);
-
-            printf("word: %s, in word: %s\n\n", outWord->c, inVal->str.c);
 
             tst = TST_insert_graph(tst, outWord, inVal, NULL, 1);
 
@@ -119,9 +115,7 @@ graphTST* create_graph_tst(FILE *file){
 Value *add_new_value(Value *head, char *word) {
     Value *new_val = create_value(word);
 
-    printf("linked list de a: ");
     if (head == NULL) {
-        printf("%s\n",new_val->str.c);
         return new_val; 
     }
     
@@ -134,9 +128,7 @@ Value *add_new_value(Value *head, char *word) {
     current->next = new_val;
     Value *aux = head;
     while(aux){
-        printf("%s ", aux->str.c);
         aux = aux->next;
     }
-    printf("\n");
     return head;
 }

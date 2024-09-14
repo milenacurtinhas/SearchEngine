@@ -28,7 +28,10 @@ int main(int argc, char *argv[]) {
 
     TST *stopwordsTST = create_stopwords_tst(stopwordsFile);
     TST *twordsTST = create_twords_tst(indexFile , stopwordsTST, pagesStr);
-    graphTST *graph = create_graph_tst(graphFile);
+    int n = 0;
+    int it = 0;
+    graphTST *graph = create_graph_tst(graphFile, &n);
+    graph = pageRankCalc(graph, n);
     
     free_tst(stopwordsTST);
     free_tst(twordsTST);
