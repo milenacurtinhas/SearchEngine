@@ -31,7 +31,8 @@ int main(int argc, char *argv[]) {
     int n = 0;
     int it = 0;
     graphTST *graph = create_graph_tst(graphFile, &n);
-    graph = pageRankCalc(graph, n);
+    graph = pageRankCalc(graph, n, &it);
+    printf("n its: %d\n", it);
     
     free_tst(stopwordsTST);
     free_tst(twordsTST);

@@ -130,7 +130,6 @@ graphTST *collectWordsFirstIT(graphTST *node, char *buffer, int depth, int qtt) 
         node->pr = malloc(sizeof(double) * 10);
         // Inicializa o primeiro elemento de node->pr
         node->pr[0] = 1 / (double)qtt;
-         printf("page rank iteracao 0 palavra %s: %f\n", buffer, node->pr[0]);
     }
 
     // Percorrer o meio
@@ -143,7 +142,7 @@ graphTST *collectWordsFirstIT(graphTST *node, char *buffer, int depth, int qtt) 
 }
 
 
-graphTST* collectWords(graphTST *node,graphTST *root, char *buffer, int depth, int qtt, int it) {
+graphTST* collectWords(graphTST *node,graphTST *root, char *buffer, int depth, int qtt, int *it) {
     if (node == NULL) return node;
 
     // Percorrer a subárvore da esquerda
@@ -156,13 +155,12 @@ graphTST* collectWords(graphTST *node,graphTST *root, char *buffer, int depth, i
     if (node->inValues != NULL || node->outValues != NULL) {
         buffer[depth + 1] = '\0';  // Termina a string
         
-        if(it%10 == 0){
-            node->pr = realloc(node->pr, (it + 10) * sizeof(double));
+        if(*it%10 == 0){
+            node->pr = realloc(node->pr, ((*it)+ 10) * sizeof(double));
         }
         double sum = prSum(node, root, it);
-        node->pr[it] = prCalc(node->pr[it-1], node->outQtt, sum, qtt);
+        node->pr[*it] = prCalc(node->pr[(*it)-1], node->outQtt, sum, qtt);
         
-        printf("quantidade de ins: %d // quantidade de outs: %d//page rank iteracao %d palavra %s: %f\n",node->inQtt,node->outQtt ,it, buffer, node->pr[it]);
     }
 
     // Percorrer o meio
@@ -174,23 +172,21 @@ graphTST* collectWords(graphTST *node,graphTST *root, char *buffer, int depth, i
     return node;  // Retorna o nó atualizado
 }
 
-double prSum(graphTST *node, graphTST *root, int it){
+double prSum(graphTST *node, graphTST *root, int *it){
     double sum = 0;
     if(node->inValues != NULL){
 
         Value *aux = node->inValues;
         
         while(aux){
-            printf("ins: %s ", aux->str.c);
             graphTST *inNode = TST_search_graph(root, aux->str);
 
             if(inNode != NULL){
-                sum = inNode->pr[it-1]/(double)inNode->outQtt;
+                sum += inNode->pr[(*it)-1]/(double)inNode->outQtt;
                 aux = aux->next;
             }
         }
     }
-    printf("\n");
     return sum;
 }
 
@@ -202,16 +198,15 @@ double prCalc(double prMinus, int outQtt, double sum, int n){
         return (0.15/(double)n) + (0.85*prMinus) + (0.85*sum);
     }
 }
-void collectDifferences(graphTST *node, double *sum, int it) {
+void collectDifferences(graphTST *node, double *sum, int *it) {
     if (node == NULL) return;
 
     // Percorrer a subárvore da esquerda
     collectDifferences(node->l, sum, it);
 
     // Verifica se o nó tem um array `pr` e se o índice `it` é válido
-    if (node->pr != NULL && it > 0 && it < node->inQtt) {
-        *sum += fabs((node->pr[it] - node->pr[it - 1]));
-        
+    if (node->pr != NULL) {
+        *sum += fabs((node->pr[(*it)] - node->pr[(*it)- 1]));
     }
 
     // Percorrer o meio
@@ -221,26 +216,26 @@ void collectDifferences(graphTST *node, double *sum, int it) {
     collectDifferences(node->r, sum, it);
 }
 
-double errorAtt(int n, int k, graphTST *tst){
+double errorAtt(int n, int *k, graphTST *tst){
     double sum = 0;
     collectDifferences(tst, &sum, k);
     
     return (1/(double)n)*sum;
 }
 
-graphTST *pageRankCalc(graphTST* tst, int tstSize){
+graphTST *pageRankCalc(graphTST* tst, int tstSize, int *it){
     char buffer[100];
     tst = collectWordsFirstIT(tst, buffer, 0, tstSize);
     double error = 1;
-    int it = 1;
+    (*it) = 1;
     graphTST *root = tst;
 
     while(error > 0.000001){
         tst = collectWords(tst, root, buffer, 0, tstSize, it);
-        error = errorAtt(tstSize, it,tst);
-        it++;
+        error = errorAtt(tstSize, it,root);
+        (*it)++;
     }
-    printf("iteracoes: %d\n", it);
+    (*it)--;
     return tst;
 }
 
