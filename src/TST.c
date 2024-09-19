@@ -104,7 +104,6 @@ void free_tst(TST *t) {
         free_value(t->val);
     }
 
-    // Finalmente, libera o nó atual
     free(t);
 }
 

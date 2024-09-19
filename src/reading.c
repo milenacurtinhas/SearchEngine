@@ -5,10 +5,8 @@ char *string_to_lower(char *str) {
     for (int i = 0; str[i]; i++) {
         str[i] = tolower((unsigned char) str[i]);
     }
-
     return str;
 }
-
 
 TST* create_stopwords_tst(FILE *file){
     
@@ -22,10 +20,9 @@ TST* create_stopwords_tst(FILE *file){
         String *word = create_string(string_to_lower(line));
 
         Value* val = calloc(1, sizeof(Value));
-        char str[12]; // Tamanho suficiente para armazenar o inteiro e o terminador nulo
+        char str[12];
         sprintf(str, "%d", i);
 
-        // Converte o inteiro para uma string
         val->str.len = 1;
         val->str.c = strdup(str);
         
@@ -231,9 +228,9 @@ int partition(Result *a, int lo, int hi){
     int i = lo, j = hi+1;
     Result v = a[lo];
     while(1) {
-        while (a[++i].rank > v.rank)  // Alterado para ">" ao invés de "<"
+        while (a[++i].rank > v.rank)
             if (i == hi) break;
-        while (v.rank > a[--j].rank)  // Alterado para ">" ao invés de "<"
+        while (v.rank > a[--j].rank)
             if (j == lo) break;
         if (i >= j) break;
         a = exch(a, i, j);
