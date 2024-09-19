@@ -2,6 +2,7 @@
 #include <string.h>
 
 TST* create_stopwords_tst(FILE *file){
+    
     TST *stopwordsTST = NULL;
     char *line = NULL;
     size_t len = 0;
@@ -87,24 +88,21 @@ graphTST* create_graph_tst(FILE *file, int *count){
         char *word = strtok(line, " ");
        
         String *wordStr = create_string(word);
-
-        Value *outVal = NULL;
         
         char *n = strtok(NULL, " ");
         int count = atoi(n);
 
         while ((word = strtok(NULL, " ")) != NULL) {
-            outVal = add_new_value(outVal, word);
-
+            
             String *outWord = create_string(word);
 
             Value *inVal = create_value(wordStr->c);
 
-            tst = TST_insert_graph(tst, outWord, inVal, NULL, 1);
+            tst = TST_insert_graph(tst, outWord, inVal, 0);
 
             free_string(outWord);
         }
-        tst = TST_insert_graph(tst, wordStr, NULL, outVal, count);
+        tst = TST_insert_graph(tst, wordStr, NULL, count);
         
         free_string(wordStr);
     }
@@ -112,26 +110,6 @@ graphTST* create_graph_tst(FILE *file, int *count){
     return tst;
 }
 
-Value *add_new_value(Value *head, char *word) {
-    Value *new_val = create_value(word);
-
-    if (head == NULL) {
-        return new_val; 
-    }
-    
-    Value *current = head;
-    
-    while (current->next != NULL) {
-        current = current->next;
-    }
-    
-    current->next = new_val;
-    Value *aux = head;
-    while(aux){
-        aux = aux->next;
-    }
-    return head;
-}
 
 void read_searches(FILE *file, TST *stopwordsTST, TST *twordsTST, graphTST *graph, int it){
     char *line = NULL;

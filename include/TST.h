@@ -14,6 +14,7 @@ typedef struct Value{
 typedef struct node TST;
 struct node {
     Value *val;
+    Value *tail;
     unsigned char c;
     TST *l, *m, *r;
 };

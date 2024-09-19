@@ -6,7 +6,8 @@
 
 typedef struct graphNode graphTST;
 struct graphNode {
-    Value *inValues, *outValues;
+    Value *inValues;
+    Value *tail;
     unsigned char c;
     int inQtt, outQtt;
     graphTST *l, *m, *r;
@@ -14,8 +15,8 @@ struct graphNode {
 };
 
 graphTST* create_node_graph();
-graphTST* rec_insert_graph(graphTST* t, String* key, Value *valIN, Value *valOut, int d, int qtt);
-graphTST* TST_insert_graph(graphTST* t, String* key , Value *valIN, Value *valOut, int qtt);
+graphTST* rec_insert_graph(graphTST* t, String* key, Value *valIN, int d, int qtt);
+graphTST* TST_insert_graph(graphTST* t, String* key , Value *valIN, int qtt);
 graphTST* rec_search_graph(graphTST* t, String key, int d);
 graphTST* TST_search_graph(graphTST* t, String key);
 void free_tst_graph(graphTST *t);

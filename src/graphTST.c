@@ -7,7 +7,7 @@ graphTST* create_node_graph(){
     return node;
 }
 
-graphTST* rec_insert_graph(graphTST* t, String* key, Value *valIN, Value *valOut, int d, int qtt){
+graphTST* rec_insert_graph(graphTST* t, String* key, Value *valIN, int d, int qtt){
     unsigned char c = key->c[d];
 
     if (t == NULL){ 
@@ -15,48 +15,37 @@ graphTST* rec_insert_graph(graphTST* t, String* key, Value *valIN, Value *valOut
         t->c = c;
     }
     if (c < t->c){
-        t->l = rec_insert_graph(t->l, key, valIN,valOut, d, qtt); 
+        t->l = rec_insert_graph(t->l, key, valIN, d, qtt); 
     }
     else if (c > t->c) { 
-        t->r = rec_insert_graph(t->r, key, valIN,valOut, d, qtt); 
+        t->r = rec_insert_graph(t->r, key, valIN, d, qtt); 
     }
     else if (d < key->len - 1){
-        t->m = rec_insert_graph(t->m, key, valIN,valOut, d+1, qtt);
+        t->m = rec_insert_graph(t->m, key, valIN, d+1, qtt);
     } 
     else{
-        if(valIN){
-            if(t->inValues == NULL){
-                t->inValues = valIN;
-            }
-            else{
-                Value* value = t->inValues;
-                while(value->next != NULL){
-                    value = value->next;
-                }
-                value->next = valIN;
-            }
-            t->inQtt += qtt;
-        }
-        if(valOut){
-            if(t->outValues == NULL){
-                t->outValues = valOut;
-            }
-            else{
-                Value* value = t->outValues;
-                while(value->next != NULL){
-                    value = value->next;
-                }
-                value->next = valOut;
-            }
+        if(qtt > 0){
             t->outQtt += qtt;
         }
+        else if(valIN){
+            if(t->inValues == NULL){
+                t->inValues = valIN;
+                t->tail = valIN;
+            }
+            else{
+                t->tail->next = valIN;
+                t->tail = valIN;;
+            }
+            t->inQtt++;
+        }
+        
     }
     
     return t;
 }
 
-graphTST* TST_insert_graph(graphTST* t, String* key , Value *valIN, Value *valOut, int qtt){
-    return rec_insert_graph(t, key, valIN,valOut, 0, qtt);
+graphTST* TST_insert_graph(graphTST* t, String* key , Value *valIN, int qtt){
+    return rec_insert_graph(t, key, valIN,0, qtt);
 }
 
 graphTST* rec_search_graph(graphTST* t, String key, int d){
@@ -101,9 +90,7 @@ void free_tst_graph(graphTST *t){
     if (t->inValues) {
         free_value(t->inValues);
     }
-    if (t->outValues) {
-        free_value(t->outValues);
-    }
+    
     
     free(t->pr);
     free(t);
@@ -115,7 +102,7 @@ graphTST *collectWordsFirstIT(graphTST *node, char *buffer, int depth, int qtt) 
     node->l = collectWordsFirstIT(node->l, buffer, depth, qtt);
     buffer[depth] = node->c;
 
-    if (node->inValues != NULL || node->outValues != NULL) {
+    if (node->inQtt > 0 || node->outQtt > 0) {
         buffer[depth + 1] = '\0';
 
         node->pr = malloc(sizeof(double) * 10);
@@ -134,7 +121,7 @@ graphTST* collectWords(graphTST *node,graphTST *root, char *buffer, int depth, i
     node->l = collectWords(node->l, root,buffer, depth, qtt, it);
     buffer[depth] = node->c;
 
-    if (node->inValues != NULL || node->outValues != NULL) {
+    if (node->inQtt > 0 || node->outQtt > 0) {
         buffer[depth + 1] = '\0';
         
         if(*it%10 == 0){

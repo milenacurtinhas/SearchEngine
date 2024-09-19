@@ -26,28 +26,18 @@ TST* rec_insert(TST* t, String* key, Value *val, int d) {
         t->m = rec_insert(t->m, key, val, d+1);
     } 
     else{
-        bool exist = false;
-
         if(t->val == NULL){
             t->val = val;
+            t->tail = val;
         }
         else{
-            Value* value = t->val;
-            while(value != NULL){
-                if (strcmp(value->str.c, val->str.c) == 0) {
-                    exist = true;
-                    free(val->str.c);
-                    free(val);
-                    break;
-                }
-                if (value->next == NULL) {
-                    break;
-                }
-                value = value->next;
-
+            if(strcmp(t->tail->str.c, val->str.c) == 0){
+                free(val->str.c);
+                free(val);
             }
-            if(exist == false){
-                value->next = val;
+            else{
+                t->tail->next = val;
+                t->tail = val;
             }
         }
     }
