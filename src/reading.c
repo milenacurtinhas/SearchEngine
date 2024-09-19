@@ -1,6 +1,15 @@
 #include "reading.h"
 #include <string.h>
 
+char *string_to_lower(char *str) {
+    for (int i = 0; str[i]; i++) {
+        str[i] = tolower((unsigned char) str[i]);
+    }
+
+    return str;
+}
+
+
 TST* create_stopwords_tst(FILE *file){
     
     TST *stopwordsTST = NULL;
@@ -9,7 +18,8 @@ TST* create_stopwords_tst(FILE *file){
     int i = 0;
 
     while(getline(&line, &len, file) != -1){
-        String *word = create_string(line);
+        line[strcspn(line, "\n")] = '\0';
+        String *word = create_string(string_to_lower(line));
 
         Value* val = calloc(1, sizeof(Value));
         char str[12]; // Tamanho suficiente para armazenar o inteiro e o terminador nulo
@@ -63,7 +73,7 @@ TST *read_pages(FILE *file, TST *twordsTST, TST *stopwordsTST, char *path){
         char *word = strtok(line, " ");
 
         while(word != NULL){
-            String *wordStr = create_string(word);
+            String *wordStr = create_string(string_to_lower(word));
             Value *val = create_value(path);
 
             twordsTST = TST_insert(twordsTST, wordStr, val);
@@ -87,14 +97,14 @@ graphTST* create_graph_tst(FILE *file, int *count){
         line[strcspn(line, "\n")] = '\0';
         char *word = strtok(line, " ");
        
-        String *wordStr = create_string(word);
+        String *wordStr = create_string(string_to_lower(word));
         
         char *n = strtok(NULL, " ");
         int count = atoi(n);
 
         while ((word = strtok(NULL, " ")) != NULL) {
             
-            String *outWord = create_string(word);
+            String *outWord = create_string(string_to_lower(word));
 
             Value *inVal = create_value(wordStr->c);
 
@@ -119,6 +129,7 @@ void read_searches(FILE *file, TST *stopwordsTST, TST *twordsTST, graphTST *grap
         printf("search:%s", line);
 
         line[strcspn(line, "\n")] = '\0';
+        line = string_to_lower(line);
         search_words(line, stopwordsTST, twordsTST, graph, it);
     }
     free(line);
@@ -132,7 +143,7 @@ void search_words(char *line, TST *stopwordsTST, TST *twordsTST, graphTST *graph
     char *word = strtok(line, " ");
     while (word != NULL) {
         wordsQtt++;
-        String *wordStr = create_string(word);
+        String *wordStr = create_string(string_to_lower(word));
 
         if(TST_search(stopwordsTST, wordStr) == NULL){
             Value *val = TST_search(twordsTST, wordStr);
@@ -163,6 +174,9 @@ void search_words(char *line, TST *stopwordsTST, TST *twordsTST, graphTST *graph
                     aux = aux->next;
                 }
             }
+        }
+        else{
+            wordsQtt--;
         }
         free_string(wordStr);
         word = strtok(NULL, " ");
@@ -196,7 +210,7 @@ void normalize_arrays(char **textsSearched, int *textsQtt, int wordsQtt, int arr
     }
 
     results = realloc(results, (j * sizeof(Result)));
-    quick_sort(results, 0, j-1);
+    results = quick_sort(results, 0, j-1);
     print_result(results, j);
 
     for(int i = 0; i < j; i++){
@@ -205,34 +219,38 @@ void normalize_arrays(char **textsSearched, int *textsQtt, int wordsQtt, int arr
     free(results);
 } 
 
-void exch(Result A, Result B){
-    Result t = A; 
-    A = B; 
-    B = t; 
+Result *exch(Result* a, int i, int j){
+    Result t = a[i]; 
+    a[i] = a[j]; 
+    a[j] = t; 
+
+    return a;
 }
 
 int partition(Result *a, int lo, int hi){
     int i = lo, j = hi+1;
     Result v = a[lo];
     while(1) {
-        while (a[++i].rank < v.rank)
-        if (i == hi) break;
-        while (v.rank < a[--j].rank)
-        if (j == lo) break;
+        while (a[++i].rank > v.rank)  // Alterado para ">" ao invés de "<"
+            if (i == hi) break;
+        while (v.rank > a[--j].rank)  // Alterado para ">" ao invés de "<"
+            if (j == lo) break;
         if (i >= j) break;
-        exch(a[i], a[j]);
+        a = exch(a, i, j);
     }
-    exch(a[lo], a[j]); 
+    a = exch(a, lo , j); 
     return j;
 }
 
-void quick_sort(Result *a, int lo, int hi){
+Result *quick_sort(Result *a, int lo, int hi){
     if (hi <= lo) {
-        return;
+        return a;
     }
     int j = partition(a, lo, hi);
     quick_sort(a, lo, j-1);
     quick_sort(a, j+1, hi);
+
+    return a;
 }
 
 void print_result(Result *results, int size){
