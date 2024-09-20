@@ -118,11 +118,11 @@ graphTST* create_graph_tst(FILE *file, int *count){
 }
 
 
-void read_searches(FILE *file, TST *stopwordsTST, TST *twordsTST, graphTST *graph, int it){
+void read_searches(TST *stopwordsTST, TST *twordsTST, graphTST *graph, int it){
     char *line = NULL;
     size_t len = 0;
 
-    while(getline(&line, &len, file) != -1){
+    while(getline(&line, &len, stdin) != -1){
         printf("search:%s", line);
 
         line[strcspn(line, "\n")] = '\0';

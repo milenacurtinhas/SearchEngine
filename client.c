@@ -38,13 +38,7 @@ int main(int argc, char *argv[]) {
 
     graph = pageRankCalc(graph, n, &it);
 
-    char *searchesStr = malloc(strlen(diretorio) + strlen("/searches.txt") + 1);
-    strcpy(searchesStr, diretorio);
-    strcat(searchesStr, "/searches.txt");
-
-    FILE *searchesFile = fopen(searchesStr, "r");
-    read_searches(searchesFile, stopwordsTST, twordsTST, graph, it);
-    fclose(searchesFile);
+    read_searches(stopwordsTST, twordsTST, graph, it);
 
     free_tst(stopwordsTST);
     free_tst(twordsTST);
@@ -53,8 +47,7 @@ int main(int argc, char *argv[]) {
     free(stopwordsStr);
     free(indexStr);
     free(pagesStr);
-    free(graphStr);
-    free(searchesStr);
+    free(graphStr);    
 
     return 0;
 }
